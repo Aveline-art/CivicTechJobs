@@ -47,7 +47,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install -g stylelint-config-prettier
+      - run: npm install stylelint-config-prettier-scss
 
       ################################
       # Run Linter against code base #
@@ -56,7 +56,7 @@ jobs:
         uses: github/super-linter/slim@v4
         env:
           JAVASCRIPT_DEFAULT_STYLE: prettier
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: false
           VALIDATE_PYTHON: false
           VALIDATE_PYTHON_BLACK: false
