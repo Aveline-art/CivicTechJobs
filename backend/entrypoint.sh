@@ -4,8 +4,9 @@ if [ "$TARGET" = "ECS" ]; then
     export ECS_ALLOWED_HOST
 fi
 
-python manage.py collectstatic --link && \
+python manage.py collectstatic --link --noinput && \
     python manage.py makemigrations && \
     python manage.py migrate && \
     python manage.py generateschema --file openapi-schema.yml && \
     gunicorn config.wsgi --bind 0.0.0.0:8000
+    

@@ -1,0 +1,49 @@
+name: Deploy to Amazon ECS stage environment
+
+on:
+  push:
+
+env:
+  AWS_REGION: us-west-2
+  ECR_REPOSITORY: civictechjobs-fullstack-stage
+  ECS_SERVICE: civictechjobs-fullstack-stage
+  ECS_CLUSTER: incubator-prod
+  ECS_TASK_DEFINITION: ./aws/task-definition.json
+  ECS_FAMILY: civictechjobs-fullstack-stage
+  ECS_TASK_ROLE_ARN: incubator-prod-ecs-task-role
+  ECS_EXECUTION_ROLE_ARN: incubator-prod-ecs-task-role
+
+  DB_HOST: incubator-prod-database.cewewwrvdqjn.us-west-2.rds.amazonaws.com
+  DB_NAME: civictechjobs_stage
+  DB_USER: civictechjobs_stage
+  DB_PORT: 5432
+
+  CONTAINER_NAME: civictechjobs-fullstack-stage
+
+  ENVIRON: stage
+
+  DJANGO_ALLOWED_HOSTS: ".stage.civictechjobs.org localhost"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build, push image to ECR and deploy to ECS
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build --build-arg MODE=production --build-arg DEVTOOL=source-map -f ./stage/Dockerfile -t "$ECR_REGISTRY"/"$ECR_REPOSITORY":"$IMAGE_TAG" .
